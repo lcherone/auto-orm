@@ -1,0 +1,27 @@
+{
+    "name": "autorm",
+    "version": "0.0.1",
+    "description": "",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "standard --fix && standard && cd tests && ../node_modules/mocha/bin/mocha",
+        "mkdocs-serve": "cd .dev && /usr/local/bin/mkdocs serve -a 0.0.0.0:8000",
+        "mkdocs-build": "cd .dev && /usr/local/bin/mkdocs gh-deploy ; rm site/ -Rf"
+    },
+    "author": "",
+    "license": "",
+    "standard": {
+        "env": [
+            "mocha"
+        ]
+    },
+    "dependencies": {
+        "debug": "^3.1.0",
+        "mysql": "^2.15.0"
+    },
+    "devDependencies": {
+        "mocha": "^5.1.1",
+        "should": "^13.2.3",
+        "standard": "^11.0.1"
+    }
+}

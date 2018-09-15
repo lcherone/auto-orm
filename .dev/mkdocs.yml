@@ -1,0 +1,53 @@
+site_name: Autorm
+site_description: 'A lightweight easy to use Zero Config MySQL ORM for nodejs that automagically builds your database schema.'
+site_author: 'Lawrence Cherone'
+site_url: 'https://github.com/lcherone/autorm'
+
+# Copyright
+copyright: 'Copyright &copy; 2018 Lawrence Cherone'
+
+docs_dir: '../docs'
+
+# Theme
+theme:
+  #feature:
+  #  tabs: true
+  logo: 
+    icon: 'language'
+  name: 'material'
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Ubuntu'
+    code: 'Ubuntu Mono'
+    
+# Configuration
+repo_name: 'lcherone/autorm'
+repo_url: 'https://github.com/lcherone/autorm'
+edit_uri: ''
+
+# Customization
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/lcherone/autorm'
+#  disqus: 'lxc-query'
+  
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: '#'
+  - meta
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+ 
+# Pages
+nav:
+    - 'Welcome': index.md
