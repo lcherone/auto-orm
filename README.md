@@ -40,6 +40,15 @@ and the following optional properties specific to this lib.
 | freeze       | boolean       | Freeze the database schema. | `false` |
 | underscore   | boolean       | Use underscore for relationship linking columns. e.g `table_id` else its `tableId` | `true` |
 
+Or you can pass in an existing pool:
+
+``` javascript
+const Database = new(require('...'))({
+    database: '...',
+    freeze: false,
+    underscore: true
+}, pool);
+```
 
 ### Example
 
@@ -76,117 +85,6 @@ Database.connect().then(async () => {
 Yep, it's really that simple!
 
 For complete details and further examples head over to the docs.
-
-## Testing
-
-Your need to change `./tests/test.js` and install [mocha](https://mochajs.org), then run:
-
-``` bash
-$ npm test
-```
-
-## Contributing
-
-Please see [CONTRIBUTING](https://github.com/lcherone/autorm/blob/master/CONTRIBUTING.md) for details.
-
-## Developer Support / Sponsor
-
-If you want to show your appreciation, please feel free to make a donation [https://www.paypal.me/lcherone](https://www.paypal.me/lcherone), thanks.
-
-## Credits
-
-- [Lawrence Cherone](https://github.com/lcherone)
-- [All Contributors](https://github.com/lcherone/autorm/graphs/contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](https://github.com/lcherone/autorm/blob/master/LICENSE) for more information.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
-
-A lightweight easy to use Zero Config MySQL ORM for nodejs that 'automagically' builds your database schema.
-
-Based upon original code from [Tayr](https://www.npmjs.com/package/Tayr).
-
-## Install
-Install the module with:
-
-    npm install ...
-
-## Connect to DB
-The way to connect is similar to the mysql module, internally we use the connection pool method:
-
-``` javascript
-const Database = new(require('...'))({
-    host: '127.0.0.1',
-    user: '...',
-    password: '...',
-    database: '...',
-    connectionLimit: 10,
-    waitForConnections: true,
-    queueLimit: 0,
-    freeze: false,
-    underscore: true
-});
-
-// connect
-Database.connect().then(() => {
-    console.log('Database is ready')
-}).catch(err => {
-    console.log('Error connecting to db')
-})
-```
-
-** Connection Options **
-
-Connection object the accepts mysql libs [pool options](https://github.com/mysqljs/mysql#pool-options), 
-and the following addtional properties.
-
-| Parameter    | Type          | Description   | Default       |
-| ----------   | ------------- | ------------- | ------------- | 
-| freeze       | boolean       | Freeze database schema. | `false` |
-| underscore   | boolean       | Use underscore for relationship linking ids. e.g `table_id` not `tableId` | `false` |
-
-*Note:* If you dont call `Database.connect()` then it will try to connect but you wont be able to catch any connection issues.
 
 # CRUD
 
@@ -675,3 +573,28 @@ These are the supported types, any other type can may errors.
         comments = Database.arrayToRows('comment',comments);
         console.log(comments[0].table); // output: comments
     ```
+    
+## Testing
+
+Your need to change `./tests/test.js` and install [mocha](https://mochajs.org), then run:
+
+``` bash
+$ npm test
+```
+
+## Contributing
+
+Please see [CONTRIBUTING](https://github.com/lcherone/autorm/blob/master/CONTRIBUTING.md) for details.
+
+## Developer Support / Sponsor
+
+If you want to show your appreciation, please feel free to make a donation [https://www.paypal.me/lcherone](https://www.paypal.me/lcherone), thanks.
+
+## Credits
+
+- [Lawrence Cherone](https://github.com/lcherone)
+- [All Contributors](https://github.com/lcherone/autorm/graphs/contributors)
+
+## License
+
+The MIT License (MIT). Please see [License File](https://github.com/lcherone/autorm/blob/master/LICENSE) for more information.
