@@ -50,4 +50,8 @@ markdown_extensions:
  
 # Pages
 nav:
-    - 'Welcome': index.md
+    - 'Welcome': 'index.md'
+    - 'Basics':
+      - 'CRUD': 'basics/crud.md' 
+    - 'Relations':
+      - 'CRUD': 'basics/crud.md'
