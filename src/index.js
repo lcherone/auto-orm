@@ -28,7 +28,7 @@ module.exports = function(options, activePool) {
   /**
    * Row
    */
-  Database.row = function(table, data) {
+  Database.row = function (table, data) {
     let row = this
     if (data !== undefined) row = Object.assign(row, data)
     Object.defineProperty(row, 'table', {
@@ -40,7 +40,7 @@ module.exports = function(options, activePool) {
   /**
    * Store
    */
-  Database.row.prototype.store = function() {
+  Database.row.prototype.store = function () {
     let row = this
     return new Promise((resolve, reject) => {
       if (!Database.isValidRow(row)) {
@@ -67,7 +67,7 @@ module.exports = function(options, activePool) {
   /**
    * Delete
    */
-  Database.row.prototype.delete = function() {
+  Database.row.prototype.delete = function () {
     let row = this
     return new Promise((resolve, reject) => {
       if (!Database.isValidRow(row)) throw new Error('Err: this is not a valid row!')
@@ -81,7 +81,7 @@ module.exports = function(options, activePool) {
   /**
    * Parent methods
    */
-  Database.row.prototype.getParent = function(table) {
+  Database.row.prototype.getParent = function (table) {
     let row = this
     return new Promise((resolve, reject) => {
       Database.load(table, row[table + _id]).then(parent => {
@@ -90,7 +90,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.attachParent = function(table) {
+  Database.row.prototype.attachParent = function (table) {
     let row = this
     return new Promise((resolve, reject) => {
       row.getParent(table).then(parent => {
@@ -100,7 +100,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.setParent = function(parent) {
+  Database.row.prototype.setParent = function (parent) {
     let row = this
     return new Promise((resolve, reject) => {
       parent.store().then(parent => {
@@ -115,16 +115,16 @@ module.exports = function(options, activePool) {
   /**
    * Child methods
    */
-  Database.row.prototype.getChildren = function(table) {
+  Database.row.prototype.getChildren = function (table, restSql, more) {
     let row = this
     return new Promise((resolve, reject) => {
-      Database.find(table, row.table + _id + ' = ?', row.id).then(children => {
+      Database.find(table, row.table + _id + ' = ? ' + (restSql || ''), [row.id], more).then(children => {
         resolve(children)
       })
     })
   }
 
-  Database.row.prototype.getChild = function(table) {
+  Database.row.prototype.getChild = function (table) {
     let row = this
     return new Promise((resolve, reject) => {
       Database.findOne(table, row.table + _id + ' = ?', row.id).then(child => {
@@ -133,7 +133,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.attachChildren = function(table) {
+  Database.row.prototype.attachChildren = function (table) {
     let row = this
     return new Promise((resolve, reject) => {
       row.getChildren(table).then(children => {
@@ -143,7 +143,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.attachChild = function(table) {
+  Database.row.prototype.attachChild = function (table) {
     let row = this
     return new Promise((resolve, reject) => {
       row.getChild(table).then(child => {
@@ -153,7 +153,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.addChildren = function(table, array) {
+  Database.row.prototype.addChildren = function (table, array) {
     let row = this
     return new Promise((resolve, reject) => {
       for (let i = 0; i < array.length; i++) {
@@ -165,7 +165,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.getLists = function(table) {
+  Database.row.prototype.getLists = function (table) {
     let row = this
     return new Promise((resolve, reject) => {
       const linkTable = getlinkTable(row.table, table)
@@ -177,15 +177,14 @@ module.exports = function(options, activePool) {
         Database.query(sql, row.id).then(lists => {
           resolve(Database.arrayToRows(table, lists))
         })
-      }
-      else {
+      } else {
         debug('Database: link table %s does not exist', linkTable)
         resolve([])
       }
     })
   }
 
-  Database.row.prototype.attachLists = function(table) {
+  Database.row.prototype.attachLists = function (table) {
     let row = this
     return new Promise((resolve, reject) => {
       row.getLists(table).then(lists => {
@@ -195,7 +194,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.setLists = function(table, array) {
+  Database.row.prototype.setLists = function (table, array) {
     let row = this
     return new Promise((resolve, reject) => {
       Database.storeRows(table, array).then(lists => {
@@ -214,8 +213,7 @@ module.exports = function(options, activePool) {
               resolve(lists)
             })
           })
-        }
-        else {
+        } else {
           Database.storeRows(linkTable, links).then(() => {
             resolve(lists)
           })
@@ -224,7 +222,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.addLists = function(table, array) {
+  Database.row.prototype.addLists = function (table, array) {
     let row = this
     return new Promise((resolve, reject) => {
       Database.storeRows(table, array).then(lists => {
@@ -243,7 +241,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.addList = function(list) {
+  Database.row.prototype.addList = function (list) {
     let row = this
     return new Promise((resolve, reject) => {
       list.store().then(() => {
@@ -258,7 +256,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.removeList = function(list) {
+  Database.row.prototype.removeList = function (list) {
     let row = this
     return new Promise((resolve, reject) => {
       const linkTable = getlinkTable(row.table, list.table)
@@ -269,7 +267,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.row.prototype.mutateValues = function() {
+  Database.row.prototype.mutateValues = function () {
     for (let colName in this) {
       if (this.hasOwnProperty(colName)) {
         this[colName] = mutateValue(this[colName])
@@ -277,18 +275,17 @@ module.exports = function(options, activePool) {
     }
   }
 
-  Database.storeAll = function(rows) {
+  Database.storeAll = function (rows) {
     return new Promise((resolve, reject) => {
       let results = []
 
       function step(i) {
         if (i < rows.length) {
-          rows[i].store().then(function() {
+          rows[i].store().then(function () {
             results.push(rows[i])
             step(i + 1)
           })
-        }
-        else {
+        } else {
           resolve(results)
         }
       }
@@ -296,7 +293,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.storeRows = function(table, array) {
+  Database.storeRows = function (table, array) {
     return new Promise((resolve, reject) => {
       let results = []
       let rowInstance = new Database.row(table, {})
@@ -334,7 +331,7 @@ module.exports = function(options, activePool) {
   /**
    * Find/load methods
    */
-  Database.load = function(table, id, more) {
+  Database.load = function (table, id, more) {
     return new Promise((resolve, reject) => {
       if (id === undefined) throw new Error('An id must be given!')
       if (!Number.isInteger(id)) throw new Error('id must be an Integer!')
@@ -346,7 +343,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.find = function(table, restSql, vals, more) {
+  Database.find = function (table, restSql, vals, more) {
     return new Promise((resolve, reject) => {
       waitForSchema(() => {
         if (tableExists(table)) {
@@ -357,33 +354,30 @@ module.exports = function(options, activePool) {
               attachJoins(rows, more).then(rows => {
                 resolve(rows)
               })
-            }
-            else {
+            } else {
               resolve([])
             }
           })
-        }
-        else {
+        } else {
           resolve([])
         }
       })
     })
   }
 
-  Database.findOne = function(table, restSql, vals, more) {
+  Database.findOne = function (table, restSql, vals, more) {
     return new Promise((resolve, reject) => {
       Database.find(table, restSql, vals, more).then(results => {
         if (results.length > 0) {
           resolve(new Database.row(table, toObject(results[0])))
-        }
-        else {
+        } else {
           resolve({})
         }
       }, err => reject(err))
     })
   }
 
-  Database.findOrCreate = function(table, vals, more) {
+  Database.findOrCreate = function (table, vals, more) {
     return new Promise((resolve, reject) => {
       waitForSchema(() => {
         if (tableExists(table)) {
@@ -392,23 +386,21 @@ module.exports = function(options, activePool) {
           Database.findOne(table, '`' + keys.join('` = ? AND `') + `\` = ?`, values, more).then(results => {
             if (Object.keys(results).length !== 0) {
               resolve(results)
-            }
-            else {
+            } else {
               let row = new Database.row(table, vals)
               row.store().then(results => {
                 resolve(results)
               })
             }
           })
-        }
-        else {
+        } else {
           resolve([])
         }
       })
     })
   }
 
-  Database.count = function(table, restSql, vals) {
+  Database.count = function (table, restSql, vals) {
     return new Promise((resolve, reject) => {
       waitForSchema(() => {
         if (tableExists(table)) {
@@ -417,15 +409,14 @@ module.exports = function(options, activePool) {
           }).then(results => {
             resolve(results[0]['COUNT(*)'])
           })
-        }
-        else {
+        } else {
           resolve(0)
         }
       })
     })
   }
 
-  Database.delete = function(table, restSql, vals) {
+  Database.delete = function (table, restSql, vals) {
     return new Promise((resolve, reject) => {
       const sql = 'DELETE FROM `' + table + '` WHERE ' + restSql
       Database.query(sql, vals).then(results => {
@@ -434,7 +425,7 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.query = function(sql, vals) {
+  Database.query = function (sql, vals) {
     vals = giveValsCorrectLength(sql, vals)
     return new Promise((resolve, reject) => {
       if (typeof sql !== 'string') reject(new Error('Err: sql must be a String!'))
@@ -457,11 +448,11 @@ module.exports = function(options, activePool) {
     })
   }
 
-  Database.exec = function(sql, vals) {
+  Database.exec = function (sql, vals) {
     return Database.query(sql, vals)
   }
 
-  Database.getSchema = function() {
+  Database.getSchema = function () {
     return new Promise((resolve, reject) => {
       waitForSchema(() => {
         resolve(schema)
@@ -484,8 +475,8 @@ module.exports = function(options, activePool) {
         more[type] = [more[type]]
       }
       if (Array.isArray(more[type])) {
-        dothen(rows, function(nextDatabase, row, index) {
-          dothen(more[type], function(nextRelative, relativeName) {
+        dothen(rows, function (nextDatabase, row, index) {
+          dothen(more[type], function (nextRelative, relativeName) {
             let attachFn = attachFns[type]
             rows[index][attachFn](relativeName).then(() => {
               nextRelative()
@@ -496,8 +487,7 @@ module.exports = function(options, activePool) {
         }, () => {
           resolve(rows)
         })
-      }
-      else {
+      } else {
         resolve(rows)
       }
     })
@@ -525,11 +515,11 @@ module.exports = function(options, activePool) {
         if (typeof object[colName] === 'string' && isDate.test(object[colName])) {
           // looks like datetime
           try {
-            object[colName] = new Date(object[colName])
-          }
-          catch (e) {}
-        }
-        else if (typeof object[colName] === 'string' && (
+            if (object[colName] !== '0000-00-00 00:00:00') {
+              object[colName] = new Date(object[colName])
+            }
+          } catch (e) {}
+        } else if (typeof object[colName] === 'string' && (
             // looks like json
             `${object[colName]}`.startsWith('{') || `${object[colName]}`.startsWith('[')
           ) && (
@@ -537,8 +527,7 @@ module.exports = function(options, activePool) {
           )) {
           try {
             object[colName] = JSON.parse(object[colName])
-          }
-          catch (e) {}
+          } catch (e) {}
         }
         results[colName] = object[colName]
       }
@@ -546,7 +535,7 @@ module.exports = function(options, activePool) {
     return results
   }
 
-  Database.arrayToRows = function(table, array) {
+  Database.arrayToRows = function (table, array) {
     let results = []
     for (let i = 0; i < array.length; i++) {
       if (!Database.isValidRow(array[i])) {
@@ -568,7 +557,7 @@ module.exports = function(options, activePool) {
   }
 
   function getInsertSql(row) {
-    const keysPart = Object.keys(row).join(' = ?, ') + ' = ?'
+    const keysPart = '`' + Object.keys(row).join('` = ?, `') + '` = ?'
     return `` +
       `INSERT INTO \`${row.table}\`\n` +
       `SET ${keysPart}\n` +
@@ -578,15 +567,12 @@ module.exports = function(options, activePool) {
 
   function getSelectSql(table, restSql, vals, more) {
     restSql = restSql || ' '
-    let sql = 'SELECT'
-    const selects = (more === undefined || more.fields === undefined) ? '*' : more.fields.join(', ')
-    sql += ' ' + selects
+    let sql = 'SELECT ' + (more === undefined || more.fields === undefined) ? '*' : '`' + more.fields.join('`, `') + '`'
     sql += ' FROM `' + table + '`'
     const wheresBlock = getWheresBlock(restSql)
     if (/(=|>|<|LIKE|REGEXP|BETWEEN|IS|IN|LEAST|COALESCE|INTERVAL|GREATEST|STRCMP)/i.test(wheresBlock)) {
       sql += ' WHERE ' + restSql
-    }
-    else {
+    } else {
       sql += ' ' + restSql
     }
     return sql
@@ -605,7 +591,7 @@ module.exports = function(options, activePool) {
     return sql.slice(0, wheresEnd)
   }
 
-  Database.isValidRow = function(row) {
+  Database.isValidRow = function (row) {
     return (row !== undefined && row.table !== undefined && row instanceof Database.row)
   }
 
@@ -619,6 +605,10 @@ module.exports = function(options, activePool) {
       const sql = `CREATE TABLE IF NOT EXISTS \`${row.table}\` (\n\t` +
         `id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY\n)`
       Database.query(sql).then(results => {
+        if (results.affectedRows === 0) {
+          tablesRefreshed = true
+          resolve()
+        }
         tablesRefreshed = false
         refreshTables().then(results => {
           schema = results
@@ -635,8 +625,7 @@ module.exports = function(options, activePool) {
       whatActionToCol(row, colName).then(resSql => {
         if (!resSql) {
           resolve()
-        }
-        else {
+        } else {
           return Database.query(resSql)
         }
       }).then(execResponse => {
@@ -648,6 +637,9 @@ module.exports = function(options, activePool) {
 
   function createColumns(row) {
     return new Promise((resolve, reject) => {
+      if (tablesRefreshed === true) {
+        resolve()
+      }
       const cols = Object.keys(row)
       return Promise.all(cols.map(colName => {
         return createColumn(row, colName)
@@ -692,6 +684,11 @@ module.exports = function(options, activePool) {
           return v
         }
         return JSON.stringify(v)
+      case 'string':
+        if (v === 'null') {
+          return null
+        }
+        return v
       default:
         return v
     }
@@ -700,11 +697,10 @@ module.exports = function(options, activePool) {
   function dothen(array, fn, callback) {
     function step(i) {
       if (i < array.length) {
-        fn(function() {
+        fn(function () {
           step(i + 1)
         }, array[i], i, array)
-      }
-      else {
+      } else {
         callback()
       }
     }
@@ -718,7 +714,7 @@ module.exports = function(options, activePool) {
         let skip = true
         let results = 'ALTER TABLE `' + row.table + '`'
         const command = (dbColumn) ? ' MODIFY COLUMN ' : ' ADD '
-        results += command + colName + ' ' + datatype
+        results += command + '`' + colName + '` ' + datatype
         const newEntry = String(mutateValue(row[colName]))
         if (
           dbColumn === undefined ||
@@ -791,15 +787,14 @@ module.exports = function(options, activePool) {
     }
     if (tablesRefreshed) {
       fn()
-    }
-    else {
+    } else {
       setTimeout(() => {
         waitForSchema(fn)
-      }, 100)
+      }, 5)
     }
   }
 
-  Database.connect = function() {
+  Database.connect = function () {
     return new Promise((resolve, reject) => {
       if (options.database === undefined) reject(new Error('Err: A database must be given!'))
 
@@ -808,26 +803,25 @@ module.exports = function(options, activePool) {
 
       if (activePool) {
         pool = activePool
-      }
-      else {
+      } else {
         pool = mysql.createPool(options)
       }
 
-      pool.on('connection', connection => {
-        debug('Database connection made')
-      })
-      pool.on('acquire', connection => {
-        debug('Connection %d acquired', connection.threadId)
-      })
-      pool.on('enqueue', () => {
-        debug('Waiting for available connection slot')
-      })
-      pool.on('release', connection => {
-        debug('Connection %d released', connection.threadId)
-      })
-      pool.on('error', err => {
-        throw err
-      })
+      // pool.on('connection', connection => {
+      //   debug('Database connection made')
+      // })
+      // pool.on('acquire', connection => {
+      //   debug('Connection %d acquired', connection.threadId)
+      // })
+      // pool.on('enqueue', () => {
+      //   debug('Waiting for available connection slot')
+      // })
+      // pool.on('release', connection => {
+      //   debug('Connection %d released', connection.threadId)
+      // })
+      // pool.on('error', err => {
+      //   throw err
+      // })
 
       if (!options.freeze) {
         pool.getConnection((err, connection) => {
@@ -841,8 +835,7 @@ module.exports = function(options, activePool) {
             resolve()
           })
         })
-      }
-      else {
+      } else {
         options.database = dbName
         resolve()
       }
