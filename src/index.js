@@ -569,8 +569,8 @@ module.exports = function(options, activePool) {
     restSql = restSql || ' '
 
     let sql = 'SELECT '
-    sql += (more === undefined || more.fields === undefined) ? '*' : '`' + more.fields.join('`, `') + '`'
-    sql += ' FROM `' + table + '`'
+    sql += (more === undefined || more.fields === undefined) ? '*' :
+      (more.fields.length === 1 && more.fields[0] === 'COUNT(*)' ? 'COUNT(*)' : '`' + more.fields.join('`, `') + '`')
 
     const wheresBlock = getWheresBlock(restSql)
     if (/(=|>|<|LIKE|REGEXP|BETWEEN|IS|IN|LEAST|COALESCE|INTERVAL|GREATEST|STRCMP)/i.test(wheresBlock)) {
