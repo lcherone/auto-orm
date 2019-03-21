@@ -567,14 +567,18 @@ module.exports = function(options, activePool) {
 
   function getSelectSql(table, restSql, vals, more) {
     restSql = restSql || ' '
-    let sql = 'SELECT ' + (more === undefined || more.fields === undefined) ? '*' : '`' + more.fields.join('`, `') + '`'
+
+    let sql = 'SELECT '
+    sql += (more === undefined || more.fields === undefined) ? '*' : '`' + more.fields.join('`, `') + '`'
     sql += ' FROM `' + table + '`'
+
     const wheresBlock = getWheresBlock(restSql)
     if (/(=|>|<|LIKE|REGEXP|BETWEEN|IS|IN|LEAST|COALESCE|INTERVAL|GREATEST|STRCMP)/i.test(wheresBlock)) {
       sql += ' WHERE ' + restSql
     } else {
       sql += ' ' + restSql
     }
+
     return sql
   }
 
