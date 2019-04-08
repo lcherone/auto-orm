@@ -1,6 +1,4 @@
-[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard) [![NPM](https://nodei.co/npm/lxc-query.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/lxc-query/)
-
-[![Build Status](https://travis-ci.org/lcherone/lxc-query.svg?branch=master)](https://travis-ci.org/lcherone/lxc-query)
+Slow WIP!
 
 A lightweight easy to use Zero Config MySQL ORM for nodejs that 'automagically' builds your database schema.
 
