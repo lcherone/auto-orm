@@ -1,9 +1,9 @@
 /* eslint new-cap: ["error", { "newIsCap": false }] */
 
-const debug = require('debug')('app:database:orm')
+const debug = require('debug')('_app:database:orm')
 const mysql = require('mysql')
 
-module.exports = function(options, activePool) {
+module.exports = function (options, activePool) {
   options = Object.assign({}, {
     host: '127.0.0.1',
     user: '',
@@ -62,6 +62,26 @@ module.exports = function(options, activePool) {
     }).catch(err => {
       debug('Err: ', err)
     })
+  }
+
+  /**
+   * Merge in values from obj into row
+   * - Used to merge in updated values before store
+   */
+  Database.row.prototype.merge = function (obj) {
+    let row = this
+
+    if (!Database.isValidRow(row)) {
+      throw new Error('Err: invalid row')
+    }
+
+    for (let key in toObject(obj)) {
+      if (key !== 'table' && row.hasOwnProperty(key)) {
+        row[key] = obj[key]
+      }
+    }
+
+    return new Database.row(row.table, toObject(row))
   }
 
   /**
@@ -338,8 +358,6 @@ module.exports = function(options, activePool) {
       Database.findOne(table, '`' + table + '`.`id` = ?', id, more).then(results => {
         resolve(Object.keys(results).length !== 0 && results.id ? new Database.row(table, toObject(results)) : {})
       })
-    }).catch(err => {
-      debug('Err: ', err)
     })
   }
 
@@ -518,16 +536,16 @@ module.exports = function(options, activePool) {
             if (object[colName] !== '0000-00-00 00:00:00') {
               object[colName] = new Date(object[colName])
             }
-          } catch (e) {}
+          } catch (e) { }
         } else if (typeof object[colName] === 'string' && (
-            // looks like json
-            `${object[colName]}`.startsWith('{') || `${object[colName]}`.startsWith('[')
-          ) && (
+          // looks like json
+          `${object[colName]}`.startsWith('{') || `${object[colName]}`.startsWith('[')
+        ) && (
             `${object[colName]}`.endsWith('}') || `${object[colName]}`.endsWith(']')
           )) {
           try {
             object[colName] = JSON.parse(object[colName])
-          } catch (e) {}
+          } catch (e) { }
         }
         results[colName] = object[colName]
       }
@@ -571,6 +589,8 @@ module.exports = function(options, activePool) {
     let sql = 'SELECT '
     sql += (more === undefined || more.fields === undefined) ? '*' :
       (more.fields.length === 1 && more.fields[0] === 'COUNT(*)' ? 'COUNT(*)' : '`' + more.fields.join('`, `') + '`')
+
+    sql += ' FROM `' + table + '`'
 
     const wheresBlock = getWheresBlock(restSql)
     if (/(=|>|<|LIKE|REGEXP|BETWEEN|IS|IN|LEAST|COALESCE|INTERVAL|GREATEST|STRCMP)/i.test(wheresBlock)) {
@@ -718,7 +738,7 @@ module.exports = function(options, activePool) {
         let skip = true
         let results = 'ALTER TABLE `' + row.table + '`'
         const command = (dbColumn) ? ' MODIFY COLUMN ' : ' ADD '
-        results += command + '`' + colName + '` ' + datatype
+        results += command + '`' + colName + '` ' + datatype + ' COLLATE \'utf8mb4_general_ci\' NULL '
         const newEntry = String(mutateValue(row[colName]))
         if (
           dbColumn === undefined ||
@@ -831,7 +851,7 @@ module.exports = function(options, activePool) {
         pool.getConnection((err, connection) => {
           if (err) return reject(err)
           let sql = `CREATE DATABASE IF NOT EXISTS \`${dbName}\`\n` +
-            `CHARACTER SET utf8 COLLATE utf8_general_ci`
+            `CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
           debug(sql)
           connection.query(sql, () => {
             options.database = dbName
@@ -850,5 +870,12 @@ module.exports = function(options, activePool) {
       tablesRefreshed = true
       return Promise.resolve()
     })
+  }
+
+  /**
+   * Close Connection
+   */
+  Database.close = function () {
+    pool.end();
   }
 }
