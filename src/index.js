@@ -876,6 +876,6 @@ module.exports = function (options, activePool) {
    * Close Connection
    */
   Database.close = function () {
-    pool.end();
+    !pool || pool.end()
   }
 }
