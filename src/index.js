@@ -1,7 +1,8 @@
 /* eslint new-cap: ["error", { "newIsCap": false }] */
 
-const debug = require('debug')('_app:database:orm')
+const debug = require('debug')('lib:database')
 const mysql = require('mysql')
+const exec = require('child_process').exec
 
 module.exports = function (options, activePool) {
   options = Object.assign({}, {
@@ -26,6 +27,38 @@ module.exports = function (options, activePool) {
   const Database = this
 
   /**
+   * Dump
+   * - Presumes you have mysqldump installed and available in $PATH
+   * - Wont protect from command injection shenanigans
+   */
+  Database.dump = function (destination = 'database-export.sql') {
+    return new Promise((resolve, reject) => {
+      exec(
+        `mysqldump --add-drop-table --user=${options.user} --password=${options.password} --host=${options.host} ${options.database} > ${destination} &`, {
+        maxBuffer: 1024 * 1024
+      }, function (error, stdout, stderr) {
+        return (error !== null) ? reject(stderr) : resolve(stdout)
+      })
+    })
+  }
+
+  /**
+   * Import
+   * - Presumes you have mysqldump installed and available in $PATH
+   * - Wont protect from command injection shenanigans
+   */
+  Database.import = function (infile = 'database-export.sql') {
+    return new Promise((resolve, reject) => {
+      exec(
+        `cat ${infile} | mysql --host=${options.host} --user=${options.user} --password=${options.password} ${options.database}`, {
+        maxBuffer: 1024 * 1024
+      }, function (error, stdout, stderr) {
+        return (error !== null) ? reject(stderr) : resolve(stdout)
+      })
+    })
+  }
+
+  /**
    * Row
    */
   Database.row = function (table, data) {
@@ -44,7 +77,7 @@ module.exports = function (options, activePool) {
     let row = this
     return new Promise((resolve, reject) => {
       if (!Database.isValidRow(row)) {
-        throw new Error('Err: invalid row')
+        return reject(new Error('Err: invalid row'))
       }
       createTable(row).then(() => {
         return createColumns(row)
@@ -59,8 +92,6 @@ module.exports = function (options, activePool) {
         }
         resolve(new Database.row(row.table, toObject(row)))
       })
-    }).catch(err => {
-      debug('Err: ', err)
     })
   }
 
@@ -616,7 +647,7 @@ module.exports = function (options, activePool) {
   }
 
   Database.isValidRow = function (row) {
-    return (row !== undefined && row.table !== undefined && row instanceof Database.row)
+    return ((row !== undefined && Object.keys(row).length > 0) && row.table !== undefined && row instanceof Database.row)
   }
 
   function getlinkTable(t1, t2) {
@@ -626,8 +657,16 @@ module.exports = function (options, activePool) {
 
   function createTable(row) {
     return new Promise((resolve, reject) => {
-      const sql = `CREATE TABLE IF NOT EXISTS \`${row.table}\` (\n\t` +
-        `id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY\n)`
+      const sql = `
+      SET NAMES utf8;
+      SET time_zone = '+00:00';
+      SET foreign_key_checks = 0;
+      SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+      SET NAMES utf8mb4;
+
+      CREATE TABLE IF NOT EXISTS \`${row.table}\` (
+        id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`
       Database.query(sql).then(results => {
         if (results.affectedRows === 0) {
           tablesRefreshed = true

@@ -17,7 +17,7 @@ $ npm i autorm
 Creating a database instance is very similar to the [mysql](https://www.npmjs.com/package/mysql) module:
 
 ``` javascript
-const Database = new(require('...'))({
+const database = new(require('...'))({
     host: '127.0.0.1',
     user: '...',
     password: '...',
@@ -33,15 +33,15 @@ const Database = new(require('...'))({
 Internally we use the connection pool method, so the connection object accepts any mysql [pool options](https://github.com/mysqljs/mysql#pool-options), 
 and the following optional properties specific to this lib.
 
-| Parameter    | Type          | Description   | Default       |
-| ----------   | ------------- | ------------- | ------------- | 
-| freeze       | boolean       | Freeze the database schema. | `false` |
-| underscore   | boolean       | Use underscore for relationship linking columns. e.g `table_id` else its `tableId` | `true` |
+| Parameter  | Type    | Description                                                                        | Default |
+| ---------- | ------- | ---------------------------------------------------------------------------------- | ------- |
+| freeze     | boolean | Freeze the database schema.                                                        | `false` |
+| underscore | boolean | Use underscore for relationship linking columns. e.g `table_id` else its `tableId` | `true`  |
 
 Or you can pass in an existing pool:
 
 ``` javascript
-const Database = new(require('...'))({
+const database = new(require('...'))({
     database: '...',
     freeze: false,
     underscore: true
@@ -52,21 +52,21 @@ const Database = new(require('...'))({
 
 A super simple CRUD example!
 
-**Note:** If you dont call `Database.connect()` then it will *try* to connect but you will not be able to catch any connection issues.
+**Note:** If you dont call `database.connect()` then it will *try* to connect but you will not be able to catch any connection issues.
 
 
 ``` javascript
-Database.connect().then(async () => {
-    console.log('Database is ready')
+database.connect().then(async () => {
+    console.log('database is ready')
 
     // Create & Store
-    let post = new Database.row('post', {
+    let post = new database.row('post', {
       title: 'Hello World'
     })
     await post.store()
 
     // Retrieve
-    post = await Database.load('post', post.id)
+    post = await database.load('post', post.id)
 
     // Update
     post.body = 'Lorem ipsum dolor sit amet.'
@@ -90,17 +90,17 @@ For complete details and further examples head over to the docs.
 
 Declare a row object and assign your properties:
 
-- `Database.row(table, properties)`
+- `database.row(table, properties)`
 
 **Arguments:**
 
-| Parameter    | Type          | Description   | |
-| ----------   | ------------- | ------------- | ------------- | 
-| table        | string        | Table name in which you want to store the row. | required |
-| properties   | object        | An object with the rows properties, nested properties are JSON stringified. | |
+| Parameter  | Type   | Description                                                                 |          |
+| ---------- | ------ | --------------------------------------------------------------------------- | -------- |
+| table      | string | Table name in which you want to store the row.                              | required |
+| properties | object | An object with the rows properties, nested properties are JSON stringified. |          |
 
 ``` javascript
-let person = new Database.row('person', {
+let person = new database.row('person', {
     name: 'lozza',
     created: new Date(),
     meta: {
@@ -109,7 +109,7 @@ let person = new Database.row('person', {
 });
     
 // and/or properties can also be added after initialization:
-let person = new Database.row('person');
+let person = new database.row('person');
 person.name = 'lozza';
 person.created = new Date();
 person.meta = {
@@ -149,7 +149,7 @@ person.store().then(() => {
         { type: 'personal', value: 'loz@example.com' },
         { type: 'work', value: 'office@example.com' }
     ];
-    Database.storeRows('email', emails).then(emails => {
+    database.storeRows('email', emails).then(emails => {
         // link emails to person
         person.addChildren('email', emails).then(emails => {
             console.log('emails', emails);
@@ -186,11 +186,11 @@ There are two ways to store multiple rows at the same time:
 
     ``` javascript
     var rows = [
-        new Database.row('tag', { name: 'orm' }),
-        new Database.row('person', { name: 'Steve', created: new Date() }),
-        new Database.row('person', { name: 'Simon', created: new Date() })
+        new database.row('tag', { name: 'orm' }),
+        new database.row('person', { name: 'Steve', created: new Date() }),
+        new database.row('person', { name: 'Simon', created: new Date() })
     ];
-    Database.storeAll(rows).then(function(res){
+    database.storeAll(rows).then(function(res){
         console.log(res);
     });
     ```
@@ -207,7 +207,7 @@ There are two ways to store multiple rows at the same time:
             { text: 'Easy peasy orm', posted: new Date() },
             { text: 'wonderful', posted: new Date() },
         ];
-        Database.storeRows('comment', comments).then(function(res){
+        database.storeRows('comment', comments).then(function(res){
             console.log(res);
         });
         // output: [ { text: 'I like it', posted: 1467397814583, id: 1 },
@@ -228,7 +228,7 @@ To read data from DB there are 3 ways:
     id: *[integer] --required* The id of the wanted row.
 
     ``` javascript
-        Database.load('user',6).then(function(user){
+        database.load('user',6).then(function(user){
             console.log(user);
         });
         // output: { name: 'Omar', age: '53', registeredAt: 1467137605301, id: 6 }
@@ -248,7 +248,7 @@ To read data from DB there are 3 ways:
     - manualSelect: *[boolean]* If set to true request will not select all table columns automatically *|| Default: children+'s'*
 
     ``` javascript
-        Database.find('user',{sql:'age > ?',vals: 40}).then(function(users) {
+        database.find('user',{sql:'age > ?',vals: 40}).then(function(users) {
             console.log(users);
         });
         // output: [ { id: 6, name: 'Omar', age: '53', registeredAt: 2147483647 },
@@ -257,7 +257,7 @@ To read data from DB there are 3 ways:
     If you want to **find all** rows, don't put conditions:
 
     ``` javascript
-        Database.find('user').then(function(users) {
+        database.find('user').then(function(users) {
             console.log(users);
         });
         // output: [ { id: 6, name: 'Omar', age: '53', registeredAt: 2147483647 },
@@ -267,7 +267,7 @@ To read data from DB there are 3 ways:
     To get only some columns:
 
     ``` javascript
-        Database.find('user',{sql:'age > ?',vals: 40,select: 'name,id',manualSelect: true}).then(function(users) {
+        database.find('user',{sql:'age > ?',vals: 40,select: 'name,id',manualSelect: true}).then(function(users) {
             console.log(users);
         });
         // output: [ { id: 6, name: 'Omar' },
@@ -276,7 +276,7 @@ To read data from DB there are 3 ways:
 - `findOne(table,data)`: this function works the same as `find` but returns only one row:
 
     ``` javascript
-        Database.findOne('user',{sql:'age > ?',vals: 40}).then(function(user) {
+        database.findOne('user',{sql:'age > ?',vals: 40}).then(function(user) {
             console.log(user);
         });
         // output: { id: 6, name: 'Omar', age: '53', registeredAt: 2147483647 }
@@ -303,8 +303,8 @@ There are two ways to delete records:
     - vals: *[array|simple]* The values that will replace the `?`s in order
 
     ``` javascript
-        Database.delete('user',{sql: 'age > ?',vals: 40},function() {
-            Database.find('user',function(users) {
+        database.delete('user',{sql: 'age > ?',vals: 40},function() {
+            database.find('user',function(users) {
                 console.log(users);
             });
         });
@@ -395,7 +395,7 @@ In Tayr the many to many related tables are called cousins:
     cousinsTable: *[string] --required* The cousins table name.
 
     ``` javascript
-    Database.load('film',790).then(function (film) {
+    database.load('film',790).then(function (film) {
         film.getCousins('actor').then(function (actors) {
             console.log(actors);
         });
@@ -413,7 +413,7 @@ In Tayr the many to many related tables are called cousins:
     newCousins: *[array] --required* An array of objects(not required to be rows).
 
     ``` javascript
-    Database.load('film',790).then(function (film) {
+    database.load('film',790).then(function (film) {
         var array = [
             { first_name: 'JOHN', last_name: 'CENA' },
             { first_name: 'GARRY', last_name: 'LEWIS' },
@@ -434,7 +434,7 @@ In Tayr the many to many related tables are called cousins:
     newCousins: *[array] --required* An array of objects(not required to be rows).
 
     ``` javascript
-    Database.load('film',790).then(function (film) {
+    database.load('film',790).then(function (film) {
         var array = [
             { first_name: 'PETER', last_name: 'MALCOLM' },
             { first_name: 'SAMUEL', last_name: 'HADINBOURG' },
@@ -457,8 +457,8 @@ In Tayr the many to many related tables are called cousins:
     cousin: *[row] --required* The cousin to be added.
 
     ``` javascript
-    Database.load('film',790).then(function (film) {
-        var actor = new Database.row('actor',{ first_name: 'FRED', last_name: 'HAMILTON' });
+    database.load('film',790).then(function (film) {
+        var actor = new database.row('actor',{ first_name: 'FRED', last_name: 'HAMILTON' });
         film.addCousin(actor).then(function () {
             film.getCousins('actor').then(function (actors) {
                 console.log(actors);
@@ -478,8 +478,8 @@ In Tayr the many to many related tables are called cousins:
     cousin: *[row] --required* The cousin to be unrelated.
 
     ``` javascript
-    Database.load('film',790).then(function (film) {
-        Database.load('actor',217).then(function (actor) {
+    database.load('film',790).then(function (film) {
+        database.load('actor',217).then(function (actor) {
             film.removeCousin(actor).then(function () {
                 film.getCousins('actor').then(function (actors) {
                     console.log(actors);
@@ -495,7 +495,7 @@ In Tayr the many to many related tables are called cousins:
 
 *Note: In case you want to know whats the intermediate table name between two tables you can use this:*
 ``` javascript
-Database.getUncleTableName(table1,table2);
+database.getUncleTableName(table1,table2);
 // for table1 = 'film' and table2 = 'actor'
 // it returns 'actor_film'
 ```
@@ -515,7 +515,7 @@ These are the supported types, any other type can may errors.
 
 ## Counting
 
-- `Database.count(table, data)`: Returns the number of rows found.
+- `database.count(table, data)`: Returns the number of rows found.
 
     **Arguments:**
 
@@ -524,7 +524,7 @@ These are the supported types, any other type can may errors.
     vals: *[array|simple]*  Values that will replace `?` in `sql` property
 
     ``` javascript
-    Database.count('film', 'length > ?', [60]).then(function(res) {
+    database.count('film', 'length > ?', [60]).then(function(res) {
         console.log(res);
     });
     // output: 896
@@ -532,7 +532,7 @@ These are the supported types, any other type can may errors.
 
 ## Executing MySQL
 
-- `Database.query(sql, vals)`: Allows you to execute any MySQL query.
+- `database.query(sql, vals)`: Allows you to execute any MySQL query.
 
     **Arguments:**
 
@@ -541,7 +541,7 @@ These are the supported types, any other type can may errors.
     vals: *[array|simple]*  Values that will replace `?` in `sql` property
 
     ``` javascript
-    Database.query('SELECT title FROM film WHERE length < ?',47).then(function(res) {
+    database.query('SELECT title FROM film WHERE length < ?',47).then(function(res) {
         console.log(res);
     });
     // output: [ RowDataPacket { title: 'ALIEN CENTER' },
@@ -553,7 +553,7 @@ These are the supported types, any other type can may errors.
 
 ## Converting array to rows
 
-- `Database.arrayToRows(table, array)`: Transforms an array of simple objects to an array of rows.
+- `database.arrayToRows(table, array)`: Transforms an array of simple objects to an array of rows.
 
     **Arguments:**
 
@@ -568,7 +568,7 @@ These are the supported types, any other type can may errors.
             {text: 'Keep Calm', postedAt: new Date()},
         ];
         console.log(comments[0].table); // output: undefined
-        comments = Database.arrayToRows('comment',comments);
+        comments = database.arrayToRows('comment',comments);
         console.log(comments[0].table); // output: comments
     ```
     
