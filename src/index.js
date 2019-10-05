@@ -467,8 +467,7 @@ module.exports = function (options, activePool) {
 
   Database.delete = function (table, restSql, vals) {
     return new Promise((resolve, reject) => {
-      const sql = 'DELETE FROM `' + table + '` WHERE ' + restSql
-      Database.query(sql, vals).then(results => {
+      Database.query('DELETE FROM `' + table + '` WHERE ' + restSql, vals).then(results => {
         resolve(results)
       })
     })
