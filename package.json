@@ -1,6 +1,6 @@
 {
     "name": "autorm",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "A lightweight easy to use Zero Config MySQL ORM for nodejs that 'automagically' builds your database schema.",
     "main": "src/index.js",
     "scripts": {
@@ -10,10 +10,10 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
+        "debug": "^3.1.0",
         "mysql": "^2.15.0"
     },
     "devDependencies": {
-        "debug": "^3.1.0",
         "mocha": "^5.1.1",
         "should": "^13.2.3",
         "standard": "^11.0.1"
