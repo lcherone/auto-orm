@@ -1,3 +1,4 @@
+
 # Autorm
 
 A lightweight easy to use Zero Config MySQL ORM for nodejs that 'automagically' builds your database schema.
@@ -77,7 +78,7 @@ database.connect().then(async () => {
 })
 ```
 
-Yep, it's really that simple!
+Yep, it's that simple!
 
 ## CRUD
 
@@ -92,7 +93,7 @@ Declare a new row object and assign your properties.
 | Parameter  | Type   | Description                                                                 |          |
 | ---------- | ------ | --------------------------------------------------------------------------- | -------- |
 | table      | string | Table name in which you want to store the row.                              | required |
-| properties | object | An object with the rows properties, nested properties are JSON stringified. |          |
+| properties | object | An object with the properties of the row, nested properties are JSON stringified. |          |
 
 ``` javascript
 let person = new database.row('person', {
@@ -114,7 +115,7 @@ person.meta = {
 
 ### Create/Update
 
-Actually storing a row, either by initial new database.row or updating an existing the row is done by calling the `.store()` function, if the row has an `id` that exists in the table it will update the row, else it will add a new row.
+Storing a row, either by initial new database.row or updating an existing the row is done by calling the `.store()` function, if the row has an `id` that exists in the table it will update the row, else it will add a new row.
 
 ``` javascript
 person.store().then(() => {
@@ -171,7 +172,7 @@ person.store().then(() => {
 
 ### Merge
 
-Anouther way to update is to merge your updated values.
+Another way to update is to merge your updated values.
 
 ``` javascript
 person.merge({
@@ -187,17 +188,17 @@ There are two ways to store multiple rows at the same time:
 
  - **`storeAll(rows)`**:  Stores an array of rows.
 
-	**Arguments:**
+    **Arguments:**
 
-	| Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| rows      | array | The rows to be stored. |
+    | Parameter  | Type   | Description
+    | ---------- | ------ | -------- |
+    | rows      | array | The rows to be stored. |
 
     ``` javascript
-	var rows = [
-	    new database.row('tag', { name: 'orm' }),
-	    new database.row('person', { name: 'Steve', created: new Date() }),
-	    new database.row('person', { name: 'Simon', created: new Date() })
+    var rows = [
+        new database.row('tag', { name: 'orm' }),
+        new database.row('person', { name: 'Steve', created: new Date() }),
+        new database.row('person', { name: 'Simon', created: new Date() })
    ];
    database.storeAll(rows).then(result){
         console.log(result);
@@ -206,23 +207,23 @@ There are two ways to store multiple rows at the same time:
 
  - **`storeRows(table, array)`**:  Stores an array of objects.
 
-	**Arguments:**
+    **Arguments:**
 
-	| Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The table in which rows will be stored. |
-	| array      | array | The objects to be stored. |
+    | Parameter  | Type   | Description
+    | ---------- | ------ | -------- |
+    | table      | string | The table in which rows will be stored. |
+    | array      | array | The objects to be stored. |
 
-	``` javascript
-	const comments = [
-	    { text: 'Easy peasy orm', posted: new Date() },
-	    { text: 'cool', posted: new Date() }
-	];
-	
-	database.storeRows('comment', comments).then(function(result){
-	    console.log(result);
-	});
-	```
+    ``` javascript
+    const comments = [
+        { text: 'Easy peasy orm', posted: new Date() },
+        { text: 'cool', posted: new Date() }
+    ];
+    
+    database.storeRows('comment', comments).then(function(result){
+        console.log(result);
+    });
+    ```
 
 ## Read
 
@@ -233,9 +234,9 @@ To read data from the database there are 3 ways:
     **Arguments:**
     
     | Parameter  | Type   | Description | 
-	| ---------- | ------ | -------- | 
-	| table      | string | The table of the wanted row. | 
-	| id      | integer | The id of the wanted row. |
+    | ---------- | ------ | -------- | 
+    | table      | string | The table of the wanted row. | 
+    | id      | integer | The id of the wanted row. |
     
     ``` javascript
     database.load('user', 6).then(user => {
@@ -248,12 +249,12 @@ To read data from the database there are 3 ways:
 
     **Arguments:**
 
-	| Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The table of the wanted row. |
-	| sql      | string | SQL you want to put after the WHERE clause. |
-	| values      | array|simple | The values that will replace the `?`s in order. |
-	| extra      | object | `{ fields: [], parents: [], children: [], child: [], lists: [] }`  |
+    | Parameter  | Type   | Description
+    | ---------- | ------ | -------- |
+    | table      | string | The table of the wanted row. |
+    | sql      | string | SQL you want to put after the WHERE clause. |
+    | values      | array|simple | The values that will replace the `?`s in order. |
+    | extra      | object | `{ fields: [], parents: [], children: [], child: [], lists: [] }`  |
 
 
     ``` javascript
@@ -302,11 +303,11 @@ There are two ways to delete records:
 
     **Arguments:**
 
-	| Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The table of the wanted row. |
-	| sql      | string | SQL you want to put after the WHERE clause. |
-	| values      | array|simple | The values that will replace the `?`s in order. |
+    | Parameter  | Type   | Description
+    | ---------- | ------ | -------- |
+    | table      | string | The table of the wanted row. |
+    | sql      | string | SQL you want to put after the WHERE clause. |
+    | values      | array|simple | The values that will replace the `?`s in order. |
 
 
     ``` javascript
@@ -317,7 +318,7 @@ There are two ways to delete records:
     
 ## Relations
 
-Below are some helper functions for simple relationship linking based on ids, be aware the lib does not setup foreign keys between tables on the database.
+Below are some helper functions for simple relationship linking based on ids, be aware the lib does not set up foreign keys between tables on the database.
 
 ### One to many (Parent & Children)
 
@@ -330,8 +331,8 @@ Or you can use this function:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| parent      | row|object | The row to be set as parent. |
+    | ---------- | ------ | -------- |
+    | parent      | row|object | The row to be set as parent. |
 
     ``` javascript
     // comment = { id: 1, text: 'I like it', posted: 2163717392 }
@@ -349,8 +350,8 @@ You can get the parent using this:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The parent row table. |
+    | ---------- | ------ | -------- |
+    | table      | string | The parent row table. |
 
     ``` javascript
     // comment = { id: 1, text: 'I like it', posted: 2163717392, userId: 7 }
@@ -367,9 +368,9 @@ If you have the parent and you want to append children to it do that:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The children's table. |
-	| rows       | array | The rows to be stored as children. |
+    | ---------- | ------ | -------- |
+    | table      | string | The children's table. |
+    | rows       | array | The rows to be stored as children. |
 
     ``` javascript
     // user = { id: 7, name: 'Steve', age: '36', created: null }
@@ -389,8 +390,8 @@ And to get children:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The children's table. |
+    | ---------- | ------ | -------- |
+    | table      | string | The children's table. |
 
     ``` javascript
         // user = { id: 7, name: 'Steve', age: '36', created: null }
@@ -409,8 +410,8 @@ And to get children:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The lists table name. |
+    | ---------- | ------ | -------- |
+    | table      | string | The lists table name. |
 
     ``` javascript
     database.load('film',790).then(function (film) {
@@ -423,14 +424,14 @@ And to get children:
     // { id: 55, first_name: 'FAY', last_name: 'KILMER' } ]
     ```
 
-- **`.setlists(table,newlists)`**: Replace all the current lists by the given lists in array.
+- **`.setlists(table, newlists)`**: Replace the current list by the given array.
 
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The lists table name. |
-	| newlists   | array  | An array of objects (not required to be rows). |
+    | ---------- | ------ | -------- |
+    | table      | string | The lists table name. |
+    | newlists   | array  | An array of objects (not required to be rows). |
 
     ``` javascript
     database.load('film',790).then(film => {
@@ -451,9 +452,9 @@ And to get children:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The lists table name. |
-	| newlists   | array  | An array of objects (not required to be rows). |
+    | ---------- | ------ | -------- |
+    | table      | string | The lists table name. |
+    | newlists   | array  | An array of objects (not required to be rows). |
 
     ``` javascript
     database.load('film',790).then(function (film) {
@@ -478,9 +479,9 @@ And to get children:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| item      | row | The list item to be added. |
-	| newlists   | array  | An array of objects (not required to be rows). |
+    | ---------- | ------ | -------- |
+    | item      | row | The list item to be added. |
+    | newlists   | array  | An array of objects (not required to be rows). |
 
     ``` javascript
     database.load('film', 790).then(function (film) {
@@ -504,8 +505,8 @@ And to get children:
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| item      | row | The list item to be unlinked. |
+    | ---------- | ------ | -------- |
+    | item      | row | The list item to be unlinked. |
 
 
     ``` javascript
@@ -553,11 +554,11 @@ These are the supported types, any other type may cause undesired results.
 
     **Arguments:**
 
-	| Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The table of the wanted row. |
-	| sql      | string | SQL you want to put after the WHERE clause. |
-	| values      | array|simple | The values that will replace the `?`s in order. |
+    | Parameter  | Type   | Description
+    | ---------- | ------ | -------- |
+    | table      | string | The table of the wanted row. |
+    | sql      | string | SQL you want to put after the WHERE clause. |
+    | values      | array|simple | The values that will replace the `?`s in order. |
 
     ``` javascript
     database.count('film', 'length > ?', [60]).then(function(res) {
@@ -568,15 +569,15 @@ These are the supported types, any other type may cause undesired results.
 
 ### Executing raw MySQL
 
-- `database.query(sql, vals)`: Allows you to execute any MySQL query.
+- `database.query(sql, values)`: Allows you to execute any MySQL query.
 
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The table of the wanted row. |
-	| sql        | string | SQL you want to put after the WHERE clause. |
-	| values     | array|simple | The values that will replace the `?`s in order. |
+    | ---------- | ------ | -------- |
+    | table      | string | The table of the wanted row. |
+    | sql        | string | SQL you want to put after the WHERE clause. |
+    | values     | array|simple | The values that will replace the `?`s in order. |
 
     ``` javascript
     database.query('SELECT title FROM film WHERE length < ?', 47).then(result => {
@@ -598,9 +599,9 @@ These are the supported types, any other type may cause undesired results.
     **Arguments:**
 
     | Parameter  | Type   | Description
-	| ---------- | ------ | -------- |
-	| table      | string | The table to assign to rows. |
-	| array      | array | The array of objects to be transformed into rows. |
+    | ---------- | ------ | -------- |
+    | table      | string | The table to assign to rows. |
+    | array      | array | The array of objects to be transformed into rows. |
 
     ``` javascript
         var comments = [
@@ -614,7 +615,7 @@ These are the supported types, any other type may cause undesired results.
     
 ## Testing
 
-Your need to change `./tests/test.js` and install [mocha](https://mochajs.org), then run:
+You need to change `./tests/test.js` and install [mocha](https://mochajs.org), then run:
 
 ``` bash
 $ npm test
@@ -626,7 +627,7 @@ Please see [CONTRIBUTING](https://github.com/lcherone/autorm/blob/master/CONTRIB
 
 ## Developer Support / Sponsor
 
-If you want to show your appreciation, please feel free to make a donation [https://www.paypal.me/lcherone](https://www.paypal.me/lcherone), thanks.
+If you want to show your appreciation, please feel free to donate [https://www.paypal.me/lcherone](https://www.paypal.me/lcherone), thanks.
 
 ## Credits
 
